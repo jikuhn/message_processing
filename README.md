@@ -1,6 +1,6 @@
-# Messaging Processing
+# Message Processing
 
-## Compiling the project
+## Compiling and running the project
 
 Messaging Processing application is a Java project built by gradle (tested with
 gradle version 4.2). To compile and run tests do:
