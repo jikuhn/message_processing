@@ -11,3 +11,8 @@ To execute the application with a sample data do:
 
     gradle run
     
+## Dependencies
+
+There is no external jar required to execute the application. Three dependent jar 
+libraries are introduced for testing. But in fact, two of those libraries are "transitive"
+dependencies for Spock testing framework.

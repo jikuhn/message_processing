@@ -1,5 +1,7 @@
 package com.example.message;
 
+import com.example.adjustment.AdjustmentOperator;
+
 /**
  * Message of type 3.
  */

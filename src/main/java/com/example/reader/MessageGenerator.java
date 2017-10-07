@@ -1,5 +1,6 @@
 package com.example.reader;
 
+import com.example.adjustment.AdjustmentOperator;
 import com.example.message.*;
 
 import java.math.BigDecimal;
