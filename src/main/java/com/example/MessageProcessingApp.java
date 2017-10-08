@@ -44,15 +44,19 @@ public class MessageProcessingApp {
 
         // define processors
         ContinuousReportProcessor continuousReportProcessor = new ContinuousReportProcessor(10);
+        FinalLogProcessing finalLog = new FinalLogProcessing();
 
         MessageProcessor processor = new ConsoleProcessor();
         processor
                 .chain(new RecorderProcessor(recorder))
                 .chain(new MessageType3Processor(recorder, continuousReportProcessor))
                 .chain(continuousReportProcessor)
+                .chain(finalLog)
                 .chain(new StopMessageProcessor(50));
 
         // run the processing
         new MessageProcessingApp(reader, processor).process();
+
+        finalLog.printLog();
     }
 }
