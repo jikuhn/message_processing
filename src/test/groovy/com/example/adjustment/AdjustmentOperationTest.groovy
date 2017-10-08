@@ -29,4 +29,18 @@ class AdjustmentOperationTest extends Specification {
         'sub' | new SubtractAdjustmentOperation() | 7
         'mul' | new MultiplyAdjustmentOperation() | 30
     }
+
+    def 'result of multiplication has still scale of two'() {
+        given:
+        def op = new MultiplyAdjustmentOperation()
+
+        when:
+        def sale = new Sale('x', new BigDecimal('1.10'))
+        op.adjust(sale, new BigDecimal('0.20'))
+        println sale.value
+
+        then:
+        sale.value == new BigDecimal('0.22')
+        sale.value.scale() == 2
+    }
 }
