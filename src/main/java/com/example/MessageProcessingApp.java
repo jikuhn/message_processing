@@ -1,10 +1,7 @@
 package com.example;
 
 import com.example.message.Message;
-import com.example.processor.ConsoleProcessor;
-import com.example.processor.MessageProcessor;
-import com.example.processor.RecorderProcessor;
-import com.example.processor.StopMessageProcessor;
+import com.example.processor.*;
 import com.example.reader.MessageGenerator;
 import com.example.reader.MessageReader;
 import com.example.recorder.MemoryMessageRecorder;
@@ -35,23 +32,27 @@ public class MessageProcessingApp {
     }
 
     public static void main(String[] args) {
-        // configure message processing and execute it
-
+        // define message recorder
         MessageRecorder recorder = new MemoryMessageRecorder();
 
+        // define message reader
+        MessageGenerator reader = new MessageGenerator(
+                Arrays.asList("apple", "pear", "orange", "pineapple", "lemon", "plum", "cherry"),
+                50,
+                5
+        );
+
         // define processors
+        ContinuousReportProcessor continuousReportProcessor = new ContinuousReportProcessor(10);
+
         MessageProcessor processor = new ConsoleProcessor();
         processor
                 .chain(new RecorderProcessor(recorder))
+                .chain(new MessageType3Processor(recorder, continuousReportProcessor))
+                .chain(continuousReportProcessor)
                 .chain(new StopMessageProcessor(50));
 
-        new MessageProcessingApp(
-                new MessageGenerator(
-                        Arrays.asList("apple", "pear", "orange", "pineapple", "lemon", "plum", "cherry"),
-                        50,
-                        5
-                ),
-                processor
-        ).process();
+        // run the processing
+        new MessageProcessingApp(reader, processor).process();
     }
 }

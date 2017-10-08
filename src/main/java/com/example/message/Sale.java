@@ -1,6 +1,7 @@
 package com.example.message;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * Representation of a sale which has a product type and a value.
@@ -29,8 +30,22 @@ public class Sale {
         return value;
     }
 
+    public void setValue(BigDecimal value) {
+        this.value = value;
+    }
+
     @Override
     public String toString() {
         return "{product: " + product + ", value: " + value + "}";
+    }
+
+    // equals() method created for spock tests
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Sale sale = (Sale) o;
+        return Objects.equals(product, sale.product) &&
+                Objects.equals(value, sale.value);
     }
 }

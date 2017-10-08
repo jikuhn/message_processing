@@ -1,7 +1,10 @@
 package com.example.processor
 
+import com.example.adjustment.AdjustmentCallback
 import com.example.adjustment.AdjustmentOperator
+import com.example.adjustment.EmptyAdjustmentCallback
 import com.example.message.MessageT1
+import com.example.message.MessageT2
 import com.example.message.MessageT3
 import com.example.message.Sale
 import com.example.recorder.MemoryMessageRecorder
@@ -14,7 +17,7 @@ class MessageType3ProcessorTest extends Specification {
 
     def setup() {
         recorder = new MemoryMessageRecorder()
-        processor = new MessageType3Processor(recorder)
+        processor = new MessageType3Processor(recorder, new EmptyAdjustmentCallback())
     }
 
     BigDecimal value(String value) {
@@ -57,5 +60,21 @@ class MessageType3ProcessorTest extends Specification {
         then:
         m1.sale.value == value('2.5')
         m2.sale.value == value('1.5')
+    }
+
+    def 'adjustment callback is called with correct values'() {
+        given:
+        def callback = Mock(AdjustmentCallback)
+        processor = new MessageType3Processor(recorder, callback)
+        def m2 = new MessageT2(sale('x', '1.5'), 2)
+
+        recorder.record(m2)
+
+        when:
+        processor.process(new MessageT3(this.sale('x', '1'), AdjustmentOperator.ADD))
+
+        then: 'callback is called exactly once with expected argument values'
+        1 * callback.afterAdjustment(sale('x', '2.5'), value('1.5'), 2)
+
     }
 }

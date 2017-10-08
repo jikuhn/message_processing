@@ -10,6 +10,6 @@ import java.math.BigDecimal;
 class AddAdjustmentOperation implements AdjustmentOperation {
     @Override
     public void adjust(Sale sale, BigDecimal value) {
-        // todo
+        sale.setValue(sale.getValue().add(value));
     }
 }

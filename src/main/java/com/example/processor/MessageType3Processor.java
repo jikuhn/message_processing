@@ -1,8 +1,7 @@
 package com.example.processor;
 
-import com.example.message.Message;
-import com.example.message.MessageT3;
-import com.example.message.MessageType;
+import com.example.adjustment.AdjustmentCallback;
+import com.example.message.*;
 import com.example.recorder.MessageHolder;
 import com.example.recorder.MessageRecorder;
 
@@ -13,9 +12,11 @@ import java.math.BigDecimal;
  */
 public class MessageType3Processor extends MessageProcessor {
     private MessageRecorder recorder;
+    private AdjustmentCallback callback;
 
-    public MessageType3Processor(MessageRecorder recorder) {
+    public MessageType3Processor(MessageRecorder recorder, AdjustmentCallback callback) {
         this.recorder = recorder;
+        this.callback = callback;
     }
 
     @Override
@@ -25,8 +26,6 @@ public class MessageType3Processor extends MessageProcessor {
     }
 
     private void processMessage(MessageT3 message) {
-        BigDecimal value = message.getSale().getValue();
-
         recorder
                 .messages()
                 .filter(holder -> isAdjustable(holder, message))
@@ -50,7 +49,24 @@ public class MessageType3Processor extends MessageProcessor {
      * Adjust the sale and persist the modification.
      */
     private void adjust(MessageHolder holder, MessageT3 m3) {
-        m3.getAdjustmentOperator().adjust(holder.getMessage().getSale(), m3.getSale().getValue());
+        Sale sale = holder.getMessage().getSale();
+        BigDecimal originalValue = sale.getValue();
+
+        m3.getAdjustmentOperator().adjust(sale, m3.getSale().getValue());
+
+        callback.afterAdjustment(sale, originalValue, occurrence(holder.getMessage()));
         holder.update();
+    }
+
+    /**
+     * Extract number of sale occurrence from the given message.
+     */
+    private int occurrence(Message message) {
+        int occurrence = 1;
+
+        if (message.getType() == MessageType.TYPE_2)
+            occurrence = ((MessageT2)message).getOccurrence();
+
+        return occurrence;
     }
 }
